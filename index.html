@@ -15,7 +15,7 @@
 
 </head>
 
-<body onload="new p.TestApp">
+<body onload="new pt.TestApp">
 
 <canvas id="canvas"></canvas>
 <script type="text/javascript" src="http://code.createjs.com/easeljs-0.5.0.min.js"></script>
@@ -24,22 +24,15 @@
 
 	var c = createjs;
 	var presstube = {};
-	var p = presstube;
+	var pt = presstube;
+	var p;
 
-	p.TestApp = function() {
+	pt.TestApp = function() {
 
 		var canvas = document.getElementById("canvas");
 		var stage = new c.Stage(canvas);
 		var bgRect = new c.Shape;
 		var centeredContainer = new c.Container;
-		var placeHolderDot = new c.Shape;
-
-		c.Ticker.setFPS(30);
-		c.Ticker.addListener(stage);
-
-		stage.onTick = function(e) {
-			//console.log("tick", e);
-		}
 
 		function resize() {
 			canvas.width = window.innerWidth;
@@ -50,19 +43,32 @@
 			centeredContainer.x = canvas.width/2;
 			centeredContainer.y = canvas.height/2;
 		}
+
 		resize();
 		window.onresize = resize;
-
-		stage.onClick = function(e) {
-			console.log("stage click");
-		}
-
+		c.Ticker.setFPS(30);
+		c.Ticker.addListener(stage);
 		stage.addChild(bgRect);
-		placeHolderDot.graphics.beginFill("f00").drawCircle(0, 0, 30);
-		centeredContainer.addChild(placeHolderDot);
 		stage.addChild(centeredContainer);
+		centeredContainer.addChild(new pt.Noun);
 
 	}
+
+	pt.Noun = function() { this.initialize(); };
+	p = pt.Noun.prototype = new c.Container;
+	p.Container_initialize = p.initialize;
+	pt.Noun.libraryAnimSpriteSheet = new c.SpriteSheet( {"images": ["test1.png"], "frames": [[2, 2, 124, 124, 0, -17, -11], [130, 2, 124, 124, 0, -17, -11], [258, 2, 124, 124, 0, -17, -11]], "animations": {"all": {"frames": [0, 1, 2]}}} );
+	p.initialize = function() {
+
+		this.Container_initialize();
+
+		var noun = this;
+		var libraryAnim = new c.BitmapAnimation(pt.Noun.libraryAnimSpriteSheet);
+		noun.addChild(libraryAnim);
+		var numFrames = libraryAnim.spriteSheet.getNumFrames();
+		libraryAnim.gotoAndStop(Math.floor(Math.random() * numFrames));
+	}
+
 </script>
 
 </body>
